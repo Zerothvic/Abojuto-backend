@@ -1,43 +1,32 @@
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
-
-// Mocking a User Model for this example. 
-import User from '../models/User.js';
+import { loginUser, logoutUser } from "../services/authService.js";
 
 
 const login = async (req, res) => {
-        const { email, password } = req.body;
-
   try {
-    // Check if user exists
-        const user = await User.findOne({ email });
-        
-        if (!user) {
-            return res.status(401).json({ message: 'Invalid credentials' });
-        }
+    const { email, password } = req.body;
 
-        // Check if password matches (bcrypt.compare)
-        const isMatch = await bcrypt.compare(password, user.password);
+    // Basic validation
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password are required" });
+    }
 
-        if (!isMatch) {
-            return res.status(401).json({ message: 'Invalid credentials' });
-        }
+     // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ message: "Invalid email format" });
+    }
 
-        // Generate JWT
-        const token = jwt.sign({ id: user.id, role: user.role, name: user.name }, process.env.JWT_SECRET_TOKEN, { expiresIn: '8h' });
-        res.status(200).json({ token, user: {id: user.id, name: user.name, role: user.role} });
-
+    const result = await loginUser(email, password);
+    res.status(200).json(result);
   } catch (error) {
-        res.status(500).json({ message: 'Server error during login' });
+    res.status(error.status || 500).json({ message: error.message });
   }
 };
 
 
-const logout = async (req, res) => {
-        res.status(200).json({ success: true, message: 'Logged out successfully' });
-        };
+const logout = (req, res) => {
+  const result = logoutUser();
+  res.status(200).json(result);
+};
 
-export {
-    login,
-    logout
-}
+export { login, logout };

@@ -114,34 +114,33 @@ const invoiceSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-
-//  Auto Generate Invoice Number
-
+// 🔹 Combined pre-save hook for invoice number & financial calculations
 invoiceSchema.pre("save", async function (next) {
+  // Generate invoice number if missing
   if (!this.invoiceNumber) {
     this.invoiceNumber = await generateInvoiceNumber();
   }
-  next();
-});
 
+  // Calculate each item total automatically
+  this.items.forEach(item => {
+    item.total = item.quantity * item.unitPrice;
+  });
 
- //  Auto Financial Calculation 
-
-
-invoiceSchema.pre("save", function (next) {
   // Calculate subtotal
-  this.subTotal = this.items.reduce(
-    (sum, item) => sum + item.quantity * item.unitPrice,
-    0
-  );
+  this.subTotal = this.items.reduce((sum, item) => sum + item.total, 0);
+
   // Apply discount
   const discountAmount = (this.subTotal * this.discount) / 100;
+
   // Apply tax
   const taxAmount = ((this.subTotal - discountAmount) * this.tax) / 100;
+
   // Total amount
   this.totalAmount = this.subTotal - discountAmount + taxAmount;
+
   // Balance calculation
   this.balance = this.totalAmount - this.amountPaid;
+
   // Payment status logic
   if (this.balance <= 0) {
     this.paymentStatus = "paid";
@@ -152,6 +151,7 @@ invoiceSchema.pre("save", function (next) {
   } else {
     this.paymentStatus = "unpaid";
   }
+
   next();
 });
 

@@ -1,62 +1,70 @@
-import * as patientService from '../services/patientService.js';
-
-    const registerPatient = async (req, res) => {
-        try {
-            // Validation to ensure the body isn't empty
-            if (!req.body || Object.keys(req.body).length === 0) {
-            return res.status(400).json({ 
-                success: false, 
-                message: 'Patient data is required' 
-            });
-            }
-
-            // Passing the body to the service
-            const newPatient = await patientService.createPatient(req.body);
-
-            res.status(201).json({
-            message: 'Patient registered successfully',
-            data: newPatient
-            });
-
-        } catch (error) {
-            res.status(400).json({
-            success: false,
-            message: error.message || 'Internal Server Error'
-            });
-        }
-    };
+import {
+  createPatient,
+  getAllPatients,
+  getPatientById,
+  searchPatients,
+  updatePatient,
+  deletePatient
+} from "../services/patientService.js";
 
 
-    const searchPatients = async (req, res) => {
-        try {
-            // Get search query (e.g., ?q=John)
-            const { q } = req.query;
+export const create = async (req, res) => {
+  try {
+    const patient = await createPatient(req.body, req.user.id);
+    res.status(201).json(patient);
+  } catch (error) {
+    res.status(error.status || 500).json({ message: error.message });
+  }
+};
 
-            const patients = await patientService.findPatients(q);
 
-            if (patients.length === 0) {
-            return res.status(200).json({
-                success: true,
-                message: 'No patients match your search criteria',
-                count: 0,
-                data: []
-            });
-            }
+export const getAll = async (req, res) => {
+  try {
+    const patients = await getAllPatients();
+    res.status(200).json(patients);
+  } catch (error) {
+    res.status(error.status || 500).json({ message: error.message });
+  }
+};
 
-            res.status(200).json({
-            success: true,
-            count: patients.length,
-            data: patients
-            });
-        } catch (error) {
-            res.status(500).json({
-            success: false,
-            message: 'Error connecting to the database during search'
-            });
-        }
-    };
 
-export {
-    registerPatient,
-    searchPatients
+export const getOne = async (req, res) => {
+  try {
+    const patient = await getPatientById(req.params.id);
+    res.status(200).json(patient);
+  } catch (error) {
+    res.status(error.status || 500).json({ message: error.message });
+  }
+};
+
+export const search = async (req, res) => {
+  try {
+    const { q } = req.query;
+    if (!q) {
+      return res.status(400).json({ message: "Search query is required" });
+    }
+    const patients = await searchPatients(q);
+    res.status(200).json(patients);
+  } catch (error) {
+    res.status(error.status || 500).json({ message: error.message });
+  }
+};
+
+
+export const update = async (req, res) => {
+  try {
+    const patient = await updatePatient(req.params.id, req.body);
+    res.status(200).json(patient);
+  } catch (error) {
+    res.status(error.status || 500).json({ message: error.message });
+  }
+};
+
+export const remove = async (req,res)=>{
+  try{
+    const patient = await deletePatient(req.params.id);
+    res.status(200).json(patient);
+  }catch(error){
+    res.status(error.status || 500).json({message:error.message});
+  }
 }

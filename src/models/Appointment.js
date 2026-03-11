@@ -17,7 +17,9 @@ const appointmentSchema = new mongoose.Schema(
       required: true,
       validate: {
         validator: function (value) {
-          return value >= new Date().setHours(0, 0, 0, 0);
+          const today = new Date();
+          today.setHours(0,0,0,0);
+          return value >= today;
         },
         message: "Appointment date cannot be in the past",
       },
@@ -25,7 +27,7 @@ const appointmentSchema = new mongoose.Schema(
     timeSlot: {
       type: String,
       required: true,
-      trim: true, // Example: 09:00 AM
+      trim: true, // Example: 09:00 
     },
     duration: {
       type: Number,
