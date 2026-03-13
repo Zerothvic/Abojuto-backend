@@ -1,7 +1,11 @@
 import Consultation from "../models/Consultation.js";
 import Appointment from "../models/Appointment.js";
 
-
+/*
+====================================
+ Create Consultation Service
+====================================
+*/
 export const createConsultation = async (data, doctorId) => {
   // Check if appointment exists
   const appointment = await Appointment.findById(data.appointment);
@@ -53,7 +57,11 @@ export const createConsultation = async (data, doctorId) => {
   ]);
 };
 
-
+/*
+====================================
+ Get All Consultations Service
+====================================
+*/
 export const getAllConsultations = async () => {
   const consultations = await Consultation.find()
     .populate("patient", "fullName phone patientId")
@@ -63,7 +71,11 @@ export const getAllConsultations = async () => {
   return consultations;
 };
 
-
+/*
+====================================
+ Get Single Consultation Service
+====================================
+*/
 export const getConsultationById = async (id) => {
   const consultation = await Consultation.findById(id)
     .populate("patient", "fullName phone patientId bloodGroup allergies")
@@ -77,7 +89,11 @@ export const getConsultationById = async (id) => {
   return consultation;
 };
 
-
+/*
+====================================
+ Get Consultations By Patient Service
+====================================
+*/
 export const getConsultationsByPatient = async (patientId) => {
   const consultations = await Consultation.find({ patient: patientId })
     .populate("doctor", "name specialization")
@@ -86,7 +102,11 @@ export const getConsultationsByPatient = async (patientId) => {
   return consultations;
 };
 
-
+/*
+====================================
+ Get Consultations By Doctor Service
+====================================
+*/
 export const getConsultationsByDoctor = async (doctorId) => {
   const consultations = await Consultation.find({ doctor: doctorId })
     .populate("patient", "fullName phone patientId")
@@ -95,7 +115,11 @@ export const getConsultationsByDoctor = async (doctorId) => {
   return consultations;
 };
 
-
+/*
+====================================
+ Update Consultation Service
+====================================
+*/
 export const updateConsultation = async (id, data, doctorId) => {
   const consultation = await Consultation.findById(id);
   if (!consultation) {
@@ -122,7 +146,11 @@ export const updateConsultation = async (id, data, doctorId) => {
   return consultation;
 };
 
-
+/*
+====================================
+ Update Vital Signs Service
+====================================
+*/
 export const updateVitalSigns = async (id, vitals) => {
   const consultation = await Consultation.findById(id);
   if (!consultation) {
@@ -130,6 +158,24 @@ export const updateVitalSigns = async (id, vitals) => {
     error.status = 404;
     throw error;
   }
+
+  // Validate vital signs — no negative values
+  const vitalFields = [
+    "bloodPressureSystolic",
+    "bloodPressureDiastolic",
+    "temperature",
+    "pulse",
+    "weight",
+    "height",
+  ];
+
+  vitalFields.forEach((field) => {
+    if (vitals[field] !== undefined && vitals[field] < 0) {
+      const error = new Error(`${field} cannot be negative`);
+      error.status = 400;
+      throw error;
+    }
+  });
 
   consultation.vitalSigns = {
     ...consultation.vitalSigns,

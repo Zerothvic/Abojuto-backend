@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { authenticate } from '../middlewares/auth.js';
-import { authorize } from '../middlewares/rbac.js';
+import { authMiddleware } from '../middlewares/authMiddleware.js';
+import { authorize } from '../middlewares/roleMiddleware.js';
 import { login, logout } from '../controllers/authController.js';
 
 // Controller imports (to be created by the team)
@@ -17,7 +17,7 @@ router.post('/login', (req, res) => {
   res.json({ message: "User logged in successfully" });
 });
  
-router.use(authenticate);
+router.use(authMiddleware); // All routes below require authentication
 
 router.post('/logout', (req, res) => {
   res.json({ message: "User logged out successfully" });
