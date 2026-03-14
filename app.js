@@ -1,7 +1,17 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import staffRoutes from './src/routes/user.route.js';
+
+import logRequest from "./src/middlewares/logger.js";
+import errorHandler from "./src/middlewares/errorHandler.js";
+
+import authRoutes         from "./src/routes/authRoute.js";
+import patientRoutes      from "./src/routes/patientRoute.js";
+import appointmentRoutes  from "./src/routes/appointmentRoute.js";
+import consultationRoutes from "./src/routes/consultationRoute.js";
+import invoiceRoutes      from "./src/routes/invoiceRoute.js";
+import dashboardRoutes    from "./src/routes/dashboardRoute.js";
+
 
 
 // Load environment variables
@@ -13,19 +23,24 @@ const app = express();
 app.use(cors()); // Allows our frontend to talk to this server
 app.use(express.json()); // Parses incoming JSON requests
 app.use(express.urlencoded({ extended: true }));
+app.use(logRequest); 
 
-// BASE ROUTES: This mounts all our staff endpoints under /api/v1/staff
-app.use('/api/v1/staff', staffRoutes);
+// Routes
+app.use("/api/auth",          authRoutes);
+app.use("/api/patients",      patientRoutes);
+app.use("/api/appointments",  appointmentRoutes);
+app.use("/api/consultations", consultationRoutes);
+app.use("/api/invoices",      invoiceRoutes);
+app.use("/api/dashboard",     dashboardRoutes);
 
-// Route Error handler
-app.use((req, res) => {
-  res.status(404).json({ message: 'Route not found' });
+app.get("/", (req, res) => {
+  res.status(200).json({ message: "Health Centre API is running" });
 });
 
-// Global Error handler
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(err.status || 500).json({ message: err.message || 'Internal Server Error' });
-});
+
+//  Error handler
+app.use(errorHandler);
+
+
 
 export default app;
