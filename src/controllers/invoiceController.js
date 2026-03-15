@@ -6,6 +6,7 @@ import {
   getUnpaidInvoices,
   recordPayment,
   updateInvoice,
+  generateInvoicePdf,
 } from "../services/invoiceService.js";
 
 // Allowed payment methods
@@ -95,6 +96,15 @@ export const update = async (req, res) => {
   try {
     const invoice = await updateInvoice(req.params.id, req.body);
     res.status(200).json(invoice);
+  } catch (error) {
+    res.status(error.status || 500).json({ message: error.message });
+  }
+};
+
+// Download Invoice PDF
+export const downloadPdf = async (req, res) => {
+  try {
+    await generateInvoicePdf(req.params.id, res);
   } catch (error) {
     res.status(error.status || 500).json({ message: error.message });
   }

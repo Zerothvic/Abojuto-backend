@@ -7,6 +7,7 @@ import {
   getUnpaid,
   payment,
   update,
+  downloadPdf,
 } from "../controllers/invoiceController.js";
 import {authenticate} from "../middlewares/authMiddleware.js";
 import {authorize} from "../middlewares/roleMiddleware.js";
@@ -24,5 +25,6 @@ router.get("/unpaid", authorize("accountant"), getUnpaid);
 router.get("/patient/:patientId", authorize("accountant"), getByPatient);
 router.get("/", authorize("accountant"), getAll);
 router.get("/:id", authorize("accountant"), getOne);
+router.get("/:id/pdf", authorize("accountant"), downloadPdf);
 
 export default router;

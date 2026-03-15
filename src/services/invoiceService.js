@@ -2,6 +2,7 @@ import Invoice from "../models/Invoice.js";
 import Appointment from "../models/Appointment.js";
 import Consultation from "../models/Consultation.js";
 import Patient from "../models/Patient.js";
+import generateInvoicePDF from "../utils/generateInvoicePdf.js";
 
 // Valid payment methods
 const validPaymentMethods = ["cash", "card", "bank_transfer", "insurance"];
@@ -246,4 +247,32 @@ export const updateInvoice = async (id, data) => {
   Object.assign(invoice, data);
   await invoice.save(); // triggers pre-save hook → recalculates financials
   return invoice;
+};
+
+// Generate and download invoice PDF
+export const generateInvoicePdf = async (id, res) => {
+  const invoice = await Invoice.findById(id)
+    .populate("patient", "fullName")
+    .populate("generatedBy", "name");
+  
+  if (!invoice) {
+    const error = new Error("Invoice not found");
+    error.status = 404;
+    throw error;
+  }
+
+  // Format data for PDF generation
+  const pdfData = {
+    invoiceNumber: invoice.invoiceNumber,
+    patientName: invoice.patient.fullName,
+    date: invoice.createdAt.toLocaleDateString(),
+    services: invoice.items.map(item => ({
+      name: `${item.description} (Qty: ${item.quantity})`,
+      price: item.total
+    })),
+    total: invoice.totalAmount
+  };
+
+  // Generate and send PDF
+  generateInvoicePDF(pdfData, res);
 };
