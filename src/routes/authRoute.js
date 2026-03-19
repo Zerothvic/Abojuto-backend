@@ -4,6 +4,8 @@ import { authenticate } from "../middlewares/authMiddleware.js";
 import { authorize } from "../middlewares/roleMiddleware.js";
 
 const router = Router();
+router.use(authenticate);
+
 
 // Public routes
 router.post("/login", login);
@@ -13,3 +15,4 @@ router.post("/register", authenticate, authorize("Receptionist", "Nurse", "Docto
 router.post("/logout", authenticate, logout);
 
 export default router;
+

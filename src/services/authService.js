@@ -4,7 +4,7 @@ import User from "../models/User.js";
 
 
 export const registerUser = async (userData) => {
-  const { name, email, password, role, phone, specialization, isActive } = userData;
+  const { name, email, password, role, phone } = userData;
 
   // 1. Check if user already exists
   const existingUser = await User.findOne({ email });
@@ -19,9 +19,7 @@ export const registerUser = async (userData) => {
     email,
     password,
     role,
-    phone,
-    specialization,
-    isActive
+    phone
   });
 
   // 3. Return user object without the password

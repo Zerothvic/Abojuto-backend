@@ -20,13 +20,6 @@ router.get('/health', (req, res) => {
   res.status(200).json({ message: 'Staff API is active' });
 });
 
-router.post('/register', register);
-
-router.post('/login', login);
- 
-router.use(authenticate);
-
-router.post('/logout', logout);
 
 // Dashbaord: Accessible by all staff roles, but logic will filter data based on req.user.role
 

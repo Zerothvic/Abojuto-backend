@@ -1,0 +1,10 @@
+
+POST http://localhost:3500/register 
+Content-Type: application/json
+
+{
+  "name": "Titi Ajayi",
+  "email": "titi@abojutohealthcenter.com",
+  "password": "123456",
+  "role": "Nurse"
+}
