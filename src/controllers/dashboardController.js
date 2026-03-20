@@ -14,19 +14,19 @@ export const getDashboard = async (req, res) => {
     let data;
 
     switch (role) {
-      case "receptionist":
+      case "Receptionist":
         data = await getReceptionistDashboard();
         break;
 
-      case "nurse":
+      case "Nurse":
         data = await getNurseDashboard();
         break;
 
-      case "doctor":
+      case "Doctor":
         data = await getDoctorDashboard(id);
         break;
 
-      case "accountant":
+      case "Accountant":
         data = await getAccountantDashboard();
         break;
 

@@ -2,6 +2,7 @@ import Patient from "../models/Patient.js";
 import Appointment from "../models/Appointment.js";
 import Invoice from "../models/Invoice.js";
 import { getTodayRange } from "../utils/dateHelper.js";
+import Consultation from "../models/Consultation.js"
 
 
   //  Receptionist Dashboard
@@ -34,12 +35,15 @@ export const getReceptionistDashboard = async () => {
 export const getNurseDashboard = async () => {
   const { start, end } = getTodayRange();
 
-  const [todayAppointments, totalPatients] = await Promise.all([
+  const [todayAppointments, totalPatients, todayConsultations] = await Promise.all([
     Appointment.find({ date: { $gte: start, $lte: end } })
       .populate("patient", "fullName phone patientId bloodGroup allergies")
       .populate("doctor", "name specialization")
       .sort({ timeSlot: 1 }),
     Patient.countDocuments(),
+    Consultation.find({ createdAt: { $gte: start, $lte: end } })
+      .populate("patient", "fullName patientId")
+      .select("patient vitalSigns diagnosis"),
   ]);
 
   return {
@@ -47,6 +51,10 @@ export const getNurseDashboard = async () => {
     todayAppointments: {
       count: todayAppointments.length,
       list: todayAppointments,
+    },
+    todayConsultations: {
+      count: todayConsultations.length,
+      list: todayConsultations,
     },
   };
 };
@@ -57,7 +65,7 @@ export const getNurseDashboard = async () => {
 export const getDoctorDashboard = async (doctorId) => {
   const { start, end } = getTodayRange();
 
-  const [todayAppointments, pendingAppointments, completedToday] = await Promise.all([
+  const [todayAppointments, pendingAppointments, completedToday, recentConsultations] = await Promise.all([
     Appointment.find({
       doctor: doctorId,
       date: { $gte: start, $lte: end },
@@ -74,6 +82,10 @@ export const getDoctorDashboard = async (doctorId) => {
       date: { $gte: start, $lte: end },
       status: "completed",
     }),
+    Consultation.find({ doctor: doctorId })  // ✅ recent consultations
+      .populate("patient", "fullName patientId")
+      .sort({ createdAt: -1 })
+      .limit(5),
   ]);
 
   return {
@@ -83,9 +95,12 @@ export const getDoctorDashboard = async (doctorId) => {
     },
     pendingAppointments,
     completedToday,
+    recentConsultations: {        // ✅
+      count: recentConsultations.length,
+      list: recentConsultations,
+    },
   };
 };
-
 
   //  Accountant Dashboard
 

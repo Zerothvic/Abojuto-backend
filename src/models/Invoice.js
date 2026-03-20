@@ -5,7 +5,6 @@ const invoiceSchema = new mongoose.Schema(
   {
     invoiceNumber: {
       type: String,
-      required: true,
       unique: true,
       trim: true, // Example: INV-0001
     },
