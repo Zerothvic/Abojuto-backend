@@ -1,40 +1,42 @@
 # 🏥 Community Health Centre Management System — Backend
 
-A RESTful API backend for managing a community health centre, built with **Node.js**, **Express.js**, and **MongoDB**.
+A RESTful API backend for managing a community health centre,
+built with Node.js, Express.js and MongoDB.
 
 ---
 
 ## 📋 Table of Contents
-* [Overview](#overview)
-* [Tech Stack](#tech-stack)
-* [Project Structure](#project-structure)
-* [Getting Started](#getting-started)
-* [Environment Variables](#environment-variables)
-* [API Endpoints](#api-endpoints)
-* [Role Based Access](#role-based-access)
-* [Models](#models)
+- [Overview](#overview)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+- [Environment Variables](#environment-variables)
+- [API Endpoints](#api-endpoints)
+- [Role Based Access](#role-based-access)
+- [Models](#models)
 
 ---
 
-## 📝 Overview
-This backend powers the Community Health Centre Management System MVP. It handles:
-* **Authentication & Authorization:** Secure login and role-based permissions.
-* **Patient Management:** Registration, search, and medical history.
-* **Scheduling:** Appointment booking and status tracking.
-* **Clinical Workflow:** Consultations, diagnosis, and vital signs.
-* **Financials:** Invoice generation and PDF downloads.
+## Overview
+
+This backend powers the Community Health Centre Management System MVP.
+It handles authentication, patient registration, appointment booking,
+medical consultations, invoice generation, and role-based dashboards
+for all staff members.
 
 ---
 
-## 🛠 Tech Stack
-* **Runtime:** Node.js (ESM System)
-* **Framework:** Express.js
-* **Database:** MongoDB with Mongoose
-* **Security:** JWT (JSON Web Tokens) & bcrypt
-* **Utilities:** PDFKit (PDF Generation)
+## Tech Stack
+
+- **Runtime** — Node.js
+- **Framework** — Express.js
+- **Database** — MongoDB with Mongoose
+- **Authentication** — JWT (JSON Web Tokens)
+- **Password Hashing** — bcrypt
+- **PDF Generation** — PDFKit
+- **Module System** — ESM (import/export)
 
 ---
-
 
 ## Project Structure
 ```
